@@ -43,7 +43,7 @@ Do not overbuild.
 
 For every implementation request:
 
-1. Read `AGENTS.md` , `doc.md` and `role.md`.
+1. Read `AGENTS.md` , `doc.md` ,`ui_doc.md` and `role.md`.
 2. Read the skills explicitly mentioned by the user.
 3. Read clearly needed supporting skills from the approved skill list (`.agents/skills/`).
 4. Inspect relevant code, database schema, and `doc.md` specifications & screenshot references.

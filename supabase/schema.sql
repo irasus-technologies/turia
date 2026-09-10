@@ -144,15 +144,51 @@ CREATE TABLE IF NOT EXISTS clients (
   entity_type VARCHAR(100) NOT NULL,
   pan_number VARCHAR(10),
   cin_number VARCHAR(21),
+  registration_no VARCHAR(100),
   primary_gstin VARCHAR(15),
   primary_email VARCHAR(255),
   primary_phone VARCHAR(50),
+  contact_name VARCHAR(255),
+  currency VARCHAR(10) DEFAULT 'INR',
+  place_of_supply VARCHAR(100),
+  address_line_1 TEXT,
+  address_line_2 TEXT,
+  city VARCHAR(100) DEFAULT 'Kolkata',
+  state VARCHAR(100) DEFAULT 'West Bengal',
+  country VARCHAR(100) DEFAULT 'India',
+  pin_code VARCHAR(20),
+  referred_by VARCHAR(255),
+  source VARCHAR(100) DEFAULT 'Referral',
+  client_group VARCHAR(255),
+  auditor VARCHAR(255),
+  labels TEXT[] DEFAULT '{}',
+  services TEXT[] DEFAULT '{}',
+  associate_partners VARCHAR(255),
   assigned_partner_id UUID REFERENCES firm_users(id) ON DELETE SET NULL,
   assigned_manager_id UUID REFERENCES firm_users(id) ON DELETE SET NULL,
   status VARCHAR(50) DEFAULT 'active',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Migration helpers for clients table
+ALTER TABLE clients ADD COLUMN IF NOT EXISTS contact_name VARCHAR(255);
+ALTER TABLE clients ADD COLUMN IF NOT EXISTS currency VARCHAR(10) DEFAULT 'INR';
+ALTER TABLE clients ADD COLUMN IF NOT EXISTS place_of_supply VARCHAR(100);
+ALTER TABLE clients ADD COLUMN IF NOT EXISTS address_line_1 TEXT;
+ALTER TABLE clients ADD COLUMN IF NOT EXISTS address_line_2 TEXT;
+ALTER TABLE clients ADD COLUMN IF NOT EXISTS city VARCHAR(100) DEFAULT 'Kolkata';
+ALTER TABLE clients ADD COLUMN IF NOT EXISTS state VARCHAR(100) DEFAULT 'West Bengal';
+ALTER TABLE clients ADD COLUMN IF NOT EXISTS country VARCHAR(100) DEFAULT 'India';
+ALTER TABLE clients ADD COLUMN IF NOT EXISTS pin_code VARCHAR(20);
+ALTER TABLE clients ADD COLUMN IF NOT EXISTS referred_by VARCHAR(255);
+ALTER TABLE clients ADD COLUMN IF NOT EXISTS source VARCHAR(100) DEFAULT 'Referral';
+ALTER TABLE clients ADD COLUMN IF NOT EXISTS client_group VARCHAR(255);
+ALTER TABLE clients ADD COLUMN IF NOT EXISTS auditor VARCHAR(255);
+ALTER TABLE clients ADD COLUMN IF NOT EXISTS labels TEXT[] DEFAULT '{}';
+ALTER TABLE clients ADD COLUMN IF NOT EXISTS services TEXT[] DEFAULT '{}';
+ALTER TABLE clients ADD COLUMN IF NOT EXISTS associate_partners VARCHAR(255);
+ALTER TABLE clients ADD COLUMN IF NOT EXISTS registration_no VARCHAR(100);
 
 CREATE INDEX IF NOT EXISTS idx_clients_firm ON clients(firm_id);
 CREATE INDEX IF NOT EXISTS idx_clients_code ON clients(client_code);
@@ -225,11 +261,45 @@ CREATE TABLE IF NOT EXISTS services_master (
   gst_rate NUMERIC(5, 2) DEFAULT 18.00,
   estimated_hours NUMERIC(5, 2) DEFAULT 0.00,
   tat_days INTEGER DEFAULT 7,
+  tat_hours VARCHAR(20) DEFAULT '00:00',
   is_recurring BOOLEAN DEFAULT FALSE,
   recurrence_frequency VARCHAR(50),
+  difficulty_level VARCHAR(50) DEFAULT 'Intermediate',
+  description TEXT,
+  due_timing VARCHAR(50) DEFAULT 'Within period',
+  start_day VARCHAR(50),
+  target_due_day VARCHAR(50),
+  end_day VARCHAR(50),
+  exemption_reason VARCHAR(100),
+  out_of_pocket_budget NUMERIC(10, 2) DEFAULT 0.00,
+  sop_count INTEGER DEFAULT 0,
+  subtasks_count INTEGER DEFAULT 0,
+  notes TEXT,
+  is_default BOOLEAN DEFAULT FALSE,
+  subtask_templates JSONB DEFAULT '[]'::jsonb,
+  checklist_templates JSONB DEFAULT '[]'::jsonb,
   is_active BOOLEAN DEFAULT TRUE,
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Migration helpers for services_master
+ALTER TABLE services_master ADD COLUMN IF NOT EXISTS tat_hours VARCHAR(20) DEFAULT '00:00';
+ALTER TABLE services_master ADD COLUMN IF NOT EXISTS difficulty_level VARCHAR(50) DEFAULT 'Intermediate';
+ALTER TABLE services_master ADD COLUMN IF NOT EXISTS description TEXT;
+ALTER TABLE services_master ADD COLUMN IF NOT EXISTS due_timing VARCHAR(50) DEFAULT 'Within period';
+ALTER TABLE services_master ADD COLUMN IF NOT EXISTS start_day VARCHAR(50);
+ALTER TABLE services_master ADD COLUMN IF NOT EXISTS target_due_day VARCHAR(50);
+ALTER TABLE services_master ADD COLUMN IF NOT EXISTS end_day VARCHAR(50);
+ALTER TABLE services_master ADD COLUMN IF NOT EXISTS exemption_reason VARCHAR(100);
+ALTER TABLE services_master ADD COLUMN IF NOT EXISTS out_of_pocket_budget NUMERIC(10, 2) DEFAULT 0.00;
+ALTER TABLE services_master ADD COLUMN IF NOT EXISTS sop_count INTEGER DEFAULT 0;
+ALTER TABLE services_master ADD COLUMN IF NOT EXISTS subtasks_count INTEGER DEFAULT 0;
+ALTER TABLE services_master ADD COLUMN IF NOT EXISTS notes TEXT;
+ALTER TABLE services_master ADD COLUMN IF NOT EXISTS is_default BOOLEAN DEFAULT FALSE;
+ALTER TABLE services_master ADD COLUMN IF NOT EXISTS subtask_templates JSONB DEFAULT '[]'::jsonb;
+ALTER TABLE services_master ADD COLUMN IF NOT EXISTS checklist_templates JSONB DEFAULT '[]'::jsonb;
+ALTER TABLE services_master ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
 
 CREATE INDEX IF NOT EXISTS idx_services_master_firm ON services_master(firm_id);
 
