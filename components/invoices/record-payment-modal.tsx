@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import posthog from "posthog-js";
 import { X, CreditCard, Check, AlertCircle, Percent } from "lucide-react";
 import { Invoice } from "./types";
 
@@ -98,6 +99,12 @@ export function RecordPaymentModal({
         bankName: bankName || undefined,
         receiptDate,
         notes,
+      });
+      posthog.capture("payment_recorded", {
+        payment_mode: paymentMode,
+        invoice_linked: Boolean(invoiceId),
+        amount_received: Number(amountReceived),
+        tds_deducted: Number(tdsDeducted) || 0,
       });
       onClose();
     } catch (err: unknown) {

@@ -955,6 +955,8 @@ export interface Database {
           email: string | null;
           phone: string | null;
           token_pin_encrypted: string | null;
+          token_hardware_model: string | null;
+          notes: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -978,6 +980,8 @@ export interface Database {
           email?: string | null;
           phone?: string | null;
           token_pin_encrypted?: string | null;
+          token_hardware_model?: string | null;
+          notes?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -1001,6 +1005,8 @@ export interface Database {
           email?: string | null;
           phone?: string | null;
           token_pin_encrypted?: string | null;
+          token_hardware_model?: string | null;
+          notes?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -1416,6 +1422,48 @@ export interface Database {
           end_date?: string | null;
           next_run_date?: string;
           is_active?: boolean;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      dsc_movement_logs: {
+        Row: {
+          id: string;
+          firm_id: string;
+          dsc_id: string;
+          from_location: string | null;
+          to_location: string;
+          from_bin: string | null;
+          to_bin: string | null;
+          handed_to: string | null;
+          reason: string | null;
+          logged_by: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          firm_id: string;
+          dsc_id: string;
+          from_location?: string | null;
+          to_location: string;
+          from_bin?: string | null;
+          to_bin?: string | null;
+          handed_to?: string | null;
+          reason?: string | null;
+          logged_by?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          firm_id?: string;
+          dsc_id?: string;
+          from_location?: string | null;
+          to_location?: string;
+          from_bin?: string | null;
+          to_bin?: string | null;
+          handed_to?: string | null;
+          reason?: string | null;
+          logged_by?: string | null;
           created_at?: string;
         };
         Relationships: [];

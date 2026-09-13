@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import posthog from "posthog-js";
 import {
   Plus,
   Search,
@@ -139,10 +140,12 @@ export function AttendanceTab() {
       setIsPunchedIn(true);
       setPunchInTime(timeStr);
       await punchAttendance("punch_in", "At Office");
+      posthog.capture("attendance_punched", { action: "punch_in" });
     } else {
       setIsPunchedIn(false);
       setPunchOutTime(timeStr);
       await punchAttendance("punch_out", "At Office");
+      posthog.capture("attendance_punched", { action: "punch_out" });
     }
   };
 

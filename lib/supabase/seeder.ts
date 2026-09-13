@@ -858,11 +858,18 @@ export async function seedTenantDatabase(firmId: string, currentUserId: string):
       }
     }
 
-    // 14. Seed DSC Physical Vault
-    const demoDscTokens = [
+    // 14. Seed DSC Physical Vault with dynamic expiry relative to today
+    const now = new Date();
+    const fmtDate = (offsetDays: number) => {
+      const d = new Date(now);
+      d.setDate(d.getDate() + offsetDays);
+      return d.toISOString().slice(0, 10);
+    };
+
+    const demoDscTokens: Database["public"]["Tables"]["dsc_register"]["Insert"][] = [
       {
         firm_id: firmId,
-        dsc_code: "DSC-2026-001",
+        dsc_code: "DSC-1001",
         business_name: "Acme Global Logistics Pvt Ltd",
         legal_name: "Acme Global Logistics Private Limited",
         signatory_name: "Rajesh Singhania (Director)",
@@ -870,17 +877,19 @@ export async function seedTenantDatabase(firmId: string, currentUserId: string):
         din_number: "08441122",
         vendor: "eMudhra",
         dsc_class: "Class 3",
-        issued_date: "2024-10-15",
-        expiry_date: "2026-10-14",
+        issued_date: fmtDate(-700),
+        expiry_date: fmtDate(420),
         location: "ca_office" as const,
         bin_number: "BIN-A12",
         status: "active" as const,
         email: "rajesh@acmelogistics.in",
         phone: "+91 98310 99881",
+        token_hardware_model: "ePass2003",
+        notes: "Primary MCA filing token for Acme Logistics board.",
       },
       {
         firm_id: firmId,
-        dsc_code: "DSC-2026-002",
+        dsc_code: "DSC-1002",
         business_name: "Reliance Retail Ventures Ltd",
         legal_name: "Reliance Retail Ventures Limited",
         signatory_name: "Mukesh Agarwal (Authorized Signatory)",
@@ -888,13 +897,135 @@ export async function seedTenantDatabase(firmId: string, currentUserId: string):
         din_number: "01998877",
         vendor: "Capricorn",
         dsc_class: "Class 3",
-        issued_date: "2024-09-20",
-        expiry_date: "2026-09-19",
+        issued_date: fmtDate(-720),
+        expiry_date: fmtDate(8), // Expiring in 8 days (<15d)
         location: "ca_office" as const,
         bin_number: "BIN-B04",
         status: "active" as const,
         email: "magarwal@relianceretail.com",
         phone: "+91 98200 44332",
+        token_hardware_model: "ProxKey",
+        notes: "Urgent renewal KYC documents requested from client.",
+      },
+      {
+        firm_id: firmId,
+        dsc_code: "DSC-1003",
+        business_name: "Sun Pharma Laboratories",
+        legal_name: "Sun Pharmaceutical Laboratories Ltd",
+        signatory_name: "Dr. Dilip Shanghvi (Managing Director)",
+        pan_number: "AAACS5544D",
+        din_number: "00005544",
+        vendor: "VSign",
+        dsc_class: "Class 3",
+        issued_date: fmtDate(-710),
+        expiry_date: fmtDate(14), // Expiring in 14 days (<15d)
+        location: "cs_office" as const,
+        bin_number: "BIN-A03",
+        status: "active" as const,
+        email: "dilip.shanghvi@sunpharma.com",
+        phone: "+91 98210 11223",
+        token_hardware_model: "Watchdata",
+        notes: "In custody of CS Rohit Sen for AGM compliance filings.",
+      },
+      {
+        firm_id: firmId,
+        dsc_code: "DSC-1004",
+        business_name: "Zomato Media Pvt Ltd",
+        legal_name: "Zomato Media Private Limited",
+        signatory_name: "Deepinder Goyal (CEO & Director)",
+        pan_number: "AAACZ8877K",
+        din_number: "02611887",
+        vendor: "Pantasign",
+        dsc_class: "Class 3",
+        issued_date: fmtDate(-705),
+        expiry_date: fmtDate(22), // Expiring in 22 days (<30d)
+        location: "ca_office" as const,
+        bin_number: "BIN-C02",
+        status: "active" as const,
+        email: "deepinder@zomato.com",
+        phone: "+91 98110 55443",
+        token_hardware_model: "ePass2003",
+        notes: "Renewal quote sent to company secretary.",
+      },
+      {
+        firm_id: firmId,
+        dsc_code: "DSC-1005",
+        business_name: "Tata Consumer Products",
+        legal_name: "Tata Consumer Products Limited",
+        signatory_name: "Sunil D'Souza (Managing Director)",
+        pan_number: "AAACT1234T",
+        din_number: "07112233",
+        vendor: "eMudhra",
+        dsc_class: "Class 3",
+        issued_date: fmtDate(-750),
+        expiry_date: fmtDate(-10), // Expired 10 days ago
+        location: "ca_office" as const,
+        bin_number: "BIN-A08",
+        status: "expired" as const,
+        email: "sunil.dsouza@tataconsumer.com",
+        phone: "+91 98201 99887",
+        token_hardware_model: "ProxKey",
+        notes: "Expired token. Renewal pending client Aadhaar OTP verification.",
+      },
+      {
+        firm_id: firmId,
+        dsc_code: "DSC-1006",
+        business_name: "Infosys Technologies BPO",
+        legal_name: "Infosys BPM Limited",
+        signatory_name: "Salil Parekh (CEO & MD)",
+        pan_number: "AAACI4433P",
+        din_number: "01876543",
+        vendor: "Sify",
+        dsc_class: "Class 3",
+        issued_date: fmtDate(-300),
+        expiry_date: fmtDate(430),
+        location: "client_office" as const,
+        bin_number: "VAULT-02",
+        status: "active" as const,
+        email: "salil.parekh@infosys.com",
+        phone: "+91 98450 12345",
+        token_hardware_model: "mToken",
+        notes: "Handed over to Bangalore HQ finance department on 12/01/2026.",
+      },
+      {
+        firm_id: firmId,
+        dsc_code: "DSC-1007",
+        business_name: "Wipro Enterprises Ltd",
+        legal_name: "Wipro Enterprises Private Limited",
+        signatory_name: "Azim Premji (Chairman)",
+        pan_number: "AAACW6655Q",
+        din_number: "00006655",
+        vendor: "eMudhra",
+        dsc_class: "Class 3",
+        issued_date: fmtDate(-400),
+        expiry_date: fmtDate(330),
+        location: "missing" as const,
+        bin_number: "BIN-B01",
+        status: "active" as const,
+        email: "azim.premji@wipro.com",
+        phone: "+91 98451 99880",
+        token_hardware_model: "ProxKey",
+        notes: "Physical verification flag: Token not found in BIN-B01 during monthly vault audit.",
+      },
+      {
+        firm_id: firmId,
+        dsc_code: "DSC-1008",
+        business_name: "HDFC Life Insurance",
+        legal_name: "HDFC Life Insurance Company Limited",
+        signatory_name: "Vibha Padalkar (MD & CEO)",
+        pan_number: "AAACH9900H",
+        din_number: "01682810",
+        vendor: "Capricorn",
+        dsc_class: "Class 3",
+        issued_date: fmtDate(-100),
+        expiry_date: fmtDate(630),
+        location: "ca_office" as const,
+        bin_number: "BIN-A01",
+        status: "active" as const,
+        email: "vibha@hdfclife.com",
+        phone: "+91 98205 77665",
+        token_hardware_model: "ePass2003",
+        notes: "In regular custody in safe vault drawer A.",
       },
     ];
 
@@ -909,6 +1040,71 @@ export async function seedTenantDatabase(firmId: string, currentUserId: string):
       if (!existingDsc) {
         await supabase.from("dsc_register").insert(dsc);
         counts.dsc++;
+      }
+    }
+
+    // 15. Seed Client Statutory Licenses (FSSAI, IEC, Trade, Shop)
+    const { data: clientList } = await supabase
+      .from("clients")
+      .select("id, trade_name")
+      .eq("firm_id", firmId)
+      .limit(5);
+
+    if (clientList && clientList.length > 0) {
+      const demoLicenses = [
+        {
+          firm_id: firmId,
+          client_id: clientList[0].id,
+          license_name: "FSSAI Central Food License",
+          license_number: "10020031004567",
+          issuing_authority: "Food Safety and Standards Authority of India",
+          issue_date: fmtDate(-300),
+          expiry_date: fmtDate(25), // Expiring in 25 days
+          status: "active",
+        },
+        {
+          firm_id: firmId,
+          client_id: clientList[1] ? clientList[1].id : clientList[0].id,
+          license_name: "Import Export Code (IEC)",
+          license_number: "0319088765",
+          issuing_authority: "Directorate General of Foreign Trade (DGFT)",
+          issue_date: fmtDate(-800),
+          expiry_date: fmtDate(450),
+          status: "active",
+        },
+        {
+          firm_id: firmId,
+          client_id: clientList[2] ? clientList[2].id : clientList[0].id,
+          license_name: "Kolkata Municipal Trade License",
+          license_number: "KMC/TL/2025/99812",
+          issuing_authority: "Kolkata Municipal Corporation",
+          issue_date: fmtDate(-360),
+          expiry_date: fmtDate(5), // Expiring in 5 days!
+          status: "active",
+        },
+        {
+          firm_id: firmId,
+          client_id: clientList[0].id,
+          license_name: "West Bengal Shops & Establishments Registration",
+          license_number: "WB/SE/KOL/54432",
+          issuing_authority: "Labour Department, West Bengal",
+          issue_date: fmtDate(-600),
+          expiry_date: fmtDate(-20), // Expired
+          status: "expired",
+        },
+      ];
+
+      for (const lic of demoLicenses) {
+        const { data: existingLic } = await supabase
+          .from("client_licenses")
+          .select("id")
+          .eq("firm_id", firmId)
+          .eq("license_number", lic.license_number)
+          .maybeSingle();
+
+        if (!existingLic) {
+          await supabase.from("client_licenses").insert(lic);
+        }
       }
     }
 

@@ -3,6 +3,7 @@
 import React, { useEffect } from "react";
 import Link from "next/link";
 import { useUser, useOrganization, SignOutButton } from "@clerk/nextjs";
+import posthog from "posthog-js";
 import {
   X,
   User,
@@ -184,7 +185,10 @@ export function ProfileDrawer({ isOpen, onClose }: ProfileDrawerProps) {
         {/* Footer Logout */}
         <div className="p-4 border-t border-slate-100 bg-white">
           <SignOutButton redirectUrl="/sign-in">
-            <button className="w-full flex items-center gap-3 px-3 py-2 text-slate-700 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer">
+            <button
+              onClick={() => posthog.reset()}
+              className="w-full flex items-center gap-3 px-3 py-2 text-slate-700 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+            >
               <LogOut className="size-4" />
               <span className="font-medium text-xs">Logout from Practice</span>
             </button>

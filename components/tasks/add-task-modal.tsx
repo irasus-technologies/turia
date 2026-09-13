@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import posthog from "posthog-js";
 import { X, Paperclip } from "lucide-react";
 import { TaskFormData, TaskPriority } from "./types";
 
@@ -88,6 +89,13 @@ export function AddTaskModal({
         reviewerName: reviewer?.name,
       });
 
+      posthog.capture("task_created", {
+        department: formData.department,
+        frequency: formData.frequency,
+        priority: formData.priority,
+        billing_type: formData.billingType,
+        create_proforma_invoice: formData.createProformaInvoice,
+      });
       onClose();
     } catch (err) {
       console.error("Error saving task:", err);

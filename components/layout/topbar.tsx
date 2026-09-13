@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { useUser, OrganizationSwitcher } from "@clerk/nextjs";
+import { useTheme } from "@/components/theme/theme-provider";
 import {
   Bell,
   CheckSquare,
@@ -24,7 +25,8 @@ interface TopbarProps {
 }
 
 export function Topbar({ onOpenProfile }: TopbarProps) {
-  const [isDark, setIsDark] = useState(false);
+  const { resolvedTheme, toggleTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
   const { user } = useUser();
 
   const userInitials = user?.firstName
@@ -141,11 +143,12 @@ export function Topbar({ onOpenProfile }: TopbarProps) {
 
         {/* Theme Toggle */}
         <button
-          onClick={() => setIsDark(!isDark)}
+          onClick={toggleTheme}
           className="size-8 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
-          aria-label="Toggle theme"
+          aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+          title={isDark ? "Switch to light mode" : "Switch to dark mode"}
         >
-          {isDark ? <Sun className="size-4" /> : <Moon className="size-4" />}
+          {isDark ? <Sun className="size-4 text-amber-400" /> : <Moon className="size-4 text-slate-600" />}
         </button>
 
         {/* User Avatar with status indicator */}

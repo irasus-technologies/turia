@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import posthog from "posthog-js";
 import {
   Briefcase,
   User,
@@ -107,6 +108,11 @@ export function AddEmployeeWizard({
     try {
       setIsSubmitting(true);
       await onSubmit(formData);
+      posthog.capture("employee_created", {
+        role: formData.role,
+        department: formData.department,
+        employment_status: formData.status,
+      });
     } finally {
       setIsSubmitting(false);
     }

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import posthog from "posthog-js";
 import {
   X,
   Loader2,
@@ -72,6 +73,12 @@ export function AddServiceModal({
       };
 
       await onAddService(payload);
+      posthog.capture("service_created", {
+        category,
+        frequency,
+        difficulty,
+        is_recurring: isRecurring,
+      });
       onClose();
     } catch (err) {
       console.error("Failed to add service:", err);

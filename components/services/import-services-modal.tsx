@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from "react";
+import posthog from "posthog-js";
 import {
   X,
   UploadCloud,
@@ -112,6 +113,10 @@ export function ImportServicesModal({
       setSuccessInfo({
         count: result.insertedCount,
         skipped: result.skippedCount,
+      });
+      posthog.capture("services_imported", {
+        imported_count: result.insertedCount,
+        skipped_count: result.skippedCount,
       });
       if (result.services && result.services.length > 0) {
         onImportSuccess(result.services);

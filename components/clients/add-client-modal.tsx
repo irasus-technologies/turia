@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import posthog from "posthog-js";
 import {
   X,
   ShieldCheck,
@@ -186,6 +187,11 @@ export function AddClientModal({ isOpen, onClose, onAddClient }: AddClientModalP
       };
 
       await onAddClient(payload);
+      posthog.capture("client_created", {
+        business_entity: businessEntity,
+        source,
+        service_count: selectedServices.length,
+      });
       onClose();
     } catch (err) {
       console.error("Failed to save client:", err);

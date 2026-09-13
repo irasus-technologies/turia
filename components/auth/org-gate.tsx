@@ -1,7 +1,8 @@
 "use client";
 
-import React from "react";
-import { useAuth, OrganizationSwitcher } from "@clerk/nextjs";
+import React, { useEffect, useRef } from "react";
+import { useAuth, OrganizationSwitcher, useUser } from "@clerk/nextjs";
+import posthog from "posthog-js";
 import { Building2 } from "lucide-react";
 
 interface OrgGateProps {
@@ -13,6 +14,24 @@ interface OrgGateProps {
  */
 export function OrgGate({ children }: OrgGateProps) {
   const { isLoaded, isSignedIn, orgId } = useAuth();
+  const { user } = useUser();
+  const identifiedUserId = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!isLoaded || !isSignedIn || !user?.id || !posthog.__loaded) return;
+
+    if (identifiedUserId.current && identifiedUserId.current !== user.id) {
+      posthog.reset();
+    }
+
+    if (identifiedUserId.current !== user.id) {
+      posthog.identify(user.id, {
+        email: user.primaryEmailAddress?.emailAddress,
+        name: user.fullName,
+      });
+      identifiedUserId.current = user.id;
+    }
+  }, [isLoaded, isSignedIn, user?.fullName, user?.id, user?.primaryEmailAddress?.emailAddress]);
 
   if (!isLoaded) {
     return (

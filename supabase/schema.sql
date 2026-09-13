@@ -636,12 +636,40 @@ CREATE TABLE IF NOT EXISTS dsc_register (
   email VARCHAR(255),
   phone VARCHAR(50),
   token_pin_encrypted TEXT,
+  token_hardware_model VARCHAR(100) DEFAULT 'ePass2003',
+  notes TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Migration helpers
+ALTER TABLE dsc_register ADD COLUMN IF NOT EXISTS token_hardware_model VARCHAR(100) DEFAULT 'ePass2003';
+ALTER TABLE dsc_register ADD COLUMN IF NOT EXISTS notes TEXT;
+
 CREATE INDEX IF NOT EXISTS idx_dsc_firm ON dsc_register(firm_id);
 CREATE INDEX IF NOT EXISTS idx_dsc_expiry ON dsc_register(expiry_date);
+CREATE INDEX IF NOT EXISTS idx_dsc_status ON dsc_register(status);
+CREATE INDEX IF NOT EXISTS idx_dsc_location ON dsc_register(location);
+
+-- ==============================================================================
+-- 22B. DSC CUSTODY MOVEMENT & CHECKOUT AUDIT LOGS
+-- ==============================================================================
+CREATE TABLE IF NOT EXISTS dsc_movement_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  firm_id UUID NOT NULL REFERENCES firms(id) ON DELETE CASCADE,
+  dsc_id UUID NOT NULL REFERENCES dsc_register(id) ON DELETE CASCADE,
+  from_location VARCHAR(50),
+  to_location VARCHAR(50) NOT NULL,
+  from_bin VARCHAR(50),
+  to_bin VARCHAR(50),
+  handed_to VARCHAR(255),
+  reason VARCHAR(255),
+  logged_by VARCHAR(255),
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_dsc_movement_firm ON dsc_movement_logs(firm_id);
+CREATE INDEX IF NOT EXISTS idx_dsc_movement_dsc ON dsc_movement_logs(dsc_id);
 
 -- ==============================================================================
 -- 23. STATUTORY AUDITOR APPOINTMENTS (FORM ADT-1)
@@ -727,6 +755,7 @@ ALTER TABLE leave_applications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE leave_balances ENABLE ROW LEVEL SECURITY;
 ALTER TABLE employee_expense_claims ENABLE ROW LEVEL SECURITY;
 ALTER TABLE dsc_register ENABLE ROW LEVEL SECURITY;
+ALTER TABLE dsc_movement_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE auditor_appointments_adt1 ENABLE ROW LEVEL SECURITY;
 ALTER TABLE timesheet_entries ENABLE ROW LEVEL SECURITY;
 ALTER TABLE quick_notes ENABLE ROW LEVEL SECURITY;

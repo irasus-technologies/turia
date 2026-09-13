@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import posthog from "posthog-js";
 import {
   ChevronLeft,
   Plus,
@@ -292,6 +293,12 @@ export function AddInvoiceScreen({
         status: "unpaid",
         notes,
         items: combinedItems,
+      });
+      posthog.capture("invoice_created", {
+        invoice_type: invoiceType,
+        line_item_count: items.length,
+        reimbursement_count: reimbursements.length,
+        total_amount: grandTotal,
       });
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Failed to create invoice");

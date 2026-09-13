@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import posthog from "posthog-js";
 import {
   X,
   UserPlus,
@@ -97,6 +98,13 @@ export function AddLeadModal({ isOpen, onClose, onAddLead }: AddLeadModalProps) 
     };
 
     onAddLead(newLead);
+    posthog.capture("lead_created", {
+      business_entity: businessEntity,
+      deal_value: Number(dealValue) || 0,
+      source,
+      stage,
+      service_interest: serviceInterest,
+    });
     onClose();
   };
 
